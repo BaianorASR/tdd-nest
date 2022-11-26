@@ -86,14 +86,9 @@
     "path": "./node_modules/cz-conventional-changelog"
   },
   "lint-staged": {
-    "*.{css,less,scss,html,json,jsx,js}": [
-      "prettier --write ."
-    ],
-    "*.js": "eslint --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn prettier-format && yarn lint"
-    }
+    "./src/**/*.{js,ts}": "yarn lint",
+    "./src/**/*.{css,less,scss,html,json,jsx,js,ts,tsx}": [
+      "yarn format"
+    ]
   }
 }
