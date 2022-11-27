@@ -1,6 +1,6 @@
-const { moduleExpression } = require('@babel/types');
+import type { Config } from 'jest';
 
-module.exports = {
+const config: Config = {
   moduleFileExtensions: ['js', 'json', 'ts'],
   rootDir: './',
   testRegex: '.*\\.spec\\.ts$',
@@ -16,3 +16,5 @@ module.exports = {
     '^@entities/(.*)': '<rootDir>/src/database/entities/$1',
   },
 };
+
+export default config;

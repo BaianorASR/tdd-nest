@@ -14,3 +14,7 @@ coverage/*
 
 # custom definition files
 /src/types/
+
+# jest configuration
+/jest.config.js
+/jest.config.ts

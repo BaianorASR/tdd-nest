@@ -1,4 +1,4 @@
 {
-  "*.{css,less,scss,html,json,jsx,js}": ["prettier --write ."],
-  "*.js": "eslint --fix"
+  "*.{css,less,scss,html,json,jsx,js,tsx,ts}": ["yarn format"],
+  "*.{js,ts}": "yarn lint"
 }
