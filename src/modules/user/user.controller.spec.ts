@@ -22,10 +22,11 @@ describe('UserController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('POST', () => {
+  describe('Create', () => {
     it('should create a user', async () => {
       const user = {
-        name: 'John Doe',
+        username: 'John Doe',
+        password: '1234567',
       };
 
       jest.spyOn(service, 'create').mockReturnValueOnce(user as never);

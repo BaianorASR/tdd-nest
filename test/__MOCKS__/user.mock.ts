@@ -1,4 +1,4 @@
-import { User } from 'src/modules/user/entities/user.entity';
+import { User } from '@entities/user.entity';
 
 export const Mock_User = {
   id: 1,
