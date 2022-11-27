@@ -16,6 +16,14 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "paths": {
+      // "@test/mocks": ["test/__MOCKS__"],
+      "@test/mocks/*": ["test/__MOCKS__/*"],
+      "@test/utils/*": ["test/utils/*"],
+      "@entities/*": ["src/database/entities/*"]
+    }
   }
 }
