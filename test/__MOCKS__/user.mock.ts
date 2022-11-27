@@ -5,3 +5,8 @@ export const Mock_User = {
   username: 'test',
   password: 'test',
 } as User;
+
+export const Mock_Create_User_Dto = {
+  username: 'test',
+  password: 'test',
+};

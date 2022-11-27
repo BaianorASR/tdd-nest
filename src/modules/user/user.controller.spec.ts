@@ -1,37 +1,51 @@
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Mock_Create_User_Dto, Mock_User } from '@test/mocks/user.mock';
 
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 describe('UserController', () => {
-  let controller: UserController;
-  let service: UserService;
+  let app: INestApplication;
+  let userController: UserController;
+  let userService: UserService;
+
+  const mockUserService = {
+    create: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
-      providers: [UserService],
+      providers: [
+        {
+          provide: UserService,
+          useValue: mockUserService,
+        },
+      ],
     }).compile();
 
-    controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
+    app = module.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe());
+    userController = app.get<UserController>(UserController);
+    userService = app.get<UserService>(UserService);
+
+    await app.init();
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-    expect(service).toBeDefined();
+    expect(userController).toBeDefined();
+    expect(userService).toBeDefined();
   });
 
   describe('Create', () => {
     it('should create a user', async () => {
-      const user = {
-        username: 'John Doe',
-        password: '1234567',
-      };
+      jest
+        .spyOn(userService, 'create')
+        .mockReturnValueOnce(Promise.resolve(Mock_User));
 
-      jest.spyOn(service, 'create').mockReturnValueOnce(user as never);
-
-      expect(await controller.create(user)).toBe(user);
+      const result = await userController.create(Mock_Create_User_Dto);
+      expect(result).toBe(Mock_User);
     });
   });
 });
