@@ -17,8 +17,9 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll(): Promise<User[]> {
+    const users = this.userRepository.find();
+    return users;
   }
 
   findOne(id: number) {

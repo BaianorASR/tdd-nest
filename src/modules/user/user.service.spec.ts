@@ -9,7 +9,7 @@ import { TypeOrmRepositoryMock } from '@test/utils/typeorm-repository-mock.util'
 import { UserService } from './user.service';
 
 describe('UserService', () => {
-  let service: UserService;
+  let userService: UserService;
   let userRepository: Repository<User>;
 
   beforeEach(async () => {
@@ -23,12 +23,12 @@ describe('UserService', () => {
       ],
     }).compile();
 
-    service = module.get<UserService>(UserService);
+    userService = module.get<UserService>(UserService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(userService).toBeDefined();
     expect(userRepository).toBeDefined();
   });
 
@@ -40,9 +40,23 @@ describe('UserService', () => {
         .spyOn(userRepository, 'save')
         .mockReturnValueOnce(Promise.resolve(user));
 
-      const result = await service.create(user);
+      const result = await userService.create(user);
       expect(result).toBe(user);
       expect(userRepository.create).toHaveBeenCalledWith(user);
+    });
+  });
+
+  describe('FindAll', () => {
+    it('should return an array of users', async () => {
+      const users = [Mock_User];
+
+      jest
+        .spyOn(userRepository, 'find')
+        .mockReturnValueOnce(Promise.resolve(users));
+
+      const result = await userService.findAll();
+      expect(result).toBe(users);
+      expect(userRepository.find).toHaveBeenCalled();
     });
   });
 });
