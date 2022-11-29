@@ -12,6 +12,7 @@ describe('UserController', () => {
 
   const mockUserService = {
     create: jest.fn(),
+    findAll: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -46,6 +47,17 @@ describe('UserController', () => {
 
       const result = await userController.create(Mock_Create_User_Dto);
       expect(result).toBe(Mock_User);
+    });
+  });
+
+  describe('FindAll', () => {
+    it('should return an array of users', async () => {
+      jest
+        .spyOn(userService, 'findAll')
+        .mockReturnValueOnce(Promise.resolve([Mock_User]));
+
+      const result = await userController.findAll();
+      expect(result).toEqual([Mock_User]);
     });
   });
 });
