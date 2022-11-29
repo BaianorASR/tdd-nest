@@ -59,4 +59,18 @@ describe('UserService', () => {
       expect(userRepository.find).toHaveBeenCalled();
     });
   });
+
+  describe('FindOne', () => {
+    it('should return a user', async () => {
+      const user = Mock_User;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValueOnce(Promise.resolve(user));
+
+      const result = await userService.findOne(user.id);
+      expect(result).toBe(user);
+      expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+    });
+  });
 });
