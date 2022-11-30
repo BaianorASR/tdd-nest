@@ -18,6 +18,7 @@ describe('UserController', () => {
     create: jest.fn(),
     findAll: jest.fn(),
     findOne: jest.fn(),
+    update: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -46,9 +47,7 @@ describe('UserController', () => {
 
   describe('Create', () => {
     it('Should create a user', async () => {
-      jest
-        .spyOn(userService, 'create')
-        .mockReturnValueOnce(Promise.resolve(Mock_User));
+      jest.spyOn(userService, 'create').mockResolvedValueOnce(Mock_User);
 
       const result = await userController.create(Mock_Create_User_Dto);
       expect(result).toBe(Mock_User);
@@ -57,9 +56,7 @@ describe('UserController', () => {
 
   describe('FindAll', () => {
     it('Should return an array of users', async () => {
-      jest
-        .spyOn(userService, 'findAll')
-        .mockReturnValueOnce(Promise.resolve([Mock_User]));
+      jest.spyOn(userService, 'findAll').mockResolvedValueOnce([Mock_User]);
 
       const result = await userController.findAll();
       expect(result).toEqual([Mock_User]);
@@ -68,9 +65,7 @@ describe('UserController', () => {
 
   describe('FindOneById', () => {
     it('Should return a user', async () => {
-      jest
-        .spyOn(userService, 'findOne')
-        .mockReturnValueOnce(Promise.resolve(Mock_User));
+      jest.spyOn(userService, 'findOne').mockResolvedValueOnce(Mock_User);
 
       const result = await userController.findOne(1);
       expect(result).toEqual(Mock_User);
@@ -83,6 +78,32 @@ describe('UserController', () => {
 
       try {
         const result = await userController.findOne(1);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+  });
+
+  describe('Update', () => {
+    it('Should update a user', async () => {
+      const successReturn = { message: 'User updated successfully.' };
+
+      jest.spyOn(userService, 'findOne').mockResolvedValueOnce(Mock_User);
+
+      jest.spyOn(userService, 'update').mockResolvedValueOnce(successReturn);
+
+      const result = await userController.update(1, Mock_Create_User_Dto);
+      expect(result).toEqual(successReturn);
+    });
+
+    it('Should be NotFoundException', async () => {
+      jest
+        .spyOn(userService, 'findOne')
+        .mockRejectedValueOnce(new NotFoundException());
+
+      try {
+        const result = await userController.update(1, Mock_Create_User_Dto);
         expect(result).not.toBeDefined();
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);

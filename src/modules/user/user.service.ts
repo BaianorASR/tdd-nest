@@ -1,7 +1,7 @@
 import {
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@entities/index';
@@ -47,8 +47,20 @@ export class UserService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<{ message: string }> {
+    try {
+      const userExists = await this.findOne(id);
+      if (!userExists) throw new NotFoundException('User not found');
+
+      await this.userRepository.update(id, updateUserDto);
+
+      return { message: 'User updated successfully.' };
+    } catch (error) {
+      throw error;
+    }
   }
 
   remove(id: number) {

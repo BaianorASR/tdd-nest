@@ -1,7 +1,8 @@
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 
 import { User } from '@entities/index';
 import { NotFoundException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Mock_User } from '@test/mocks/index';
@@ -85,6 +86,39 @@ describe('UserService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
       }
+    });
+  });
+
+  describe('Update', () => {
+    it('Should be NotFoundException', async () => {
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValueOnce(Promise.resolve(null));
+
+      try {
+        const result = await userService.update(1, Mock_User);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+
+    it('Should update a user', async () => {
+      const user = Mock_User;
+
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValueOnce(Promise.resolve(user));
+
+      jest
+        .spyOn(userRepository, 'update')
+        .mockResolvedValueOnce({ affected: 1 } as UpdateResult);
+      const updateUserDto = {
+        username: 'newUsername',
+      };
+
+      const result = await userService.update(1, updateUserDto);
+      expect(result).toEqual({ message: 'User updated successfully.' });
     });
   });
 });
