@@ -60,7 +60,7 @@ export class UserService {
   async remove(id: number): Promise<{ message: string }> {
     try {
       await this.findOne(id);
-      const a = await this.userRepository.delete(id);
+      await this.userRepository.delete(id);
 
       return { message: 'User deleted successfully.' };
     } catch (error) {
