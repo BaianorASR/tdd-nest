@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@entities/index';
 import { Repository } from 'typeorm';
@@ -52,9 +48,7 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<{ message: string }> {
     try {
-      const userExists = await this.findOne(id);
-      if (!userExists) throw new NotFoundException('User not found');
-
+      await this.findOne(id);
       await this.userRepository.update(id, updateUserDto);
 
       return { message: 'User updated successfully.' };
@@ -63,7 +57,14 @@ export class UserService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<{ message: string }> {
+    try {
+      await this.findOne(id);
+      const a = await this.userRepository.delete(id);
+
+      return { message: 'User deleted successfully.' };
+    } catch (error) {
+      throw error;
+    }
   }
 }

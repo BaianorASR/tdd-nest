@@ -2,7 +2,6 @@ import { Repository, UpdateResult } from 'typeorm';
 
 import { User } from '@entities/index';
 import { NotFoundException } from '@nestjs/common';
-import { UnprocessableEntityException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Mock_User } from '@test/mocks/index';
@@ -38,9 +37,7 @@ describe('UserService', () => {
     it('Should create a user', async () => {
       const user = Mock_User;
 
-      jest
-        .spyOn(userRepository, 'save')
-        .mockReturnValueOnce(Promise.resolve(user));
+      jest.spyOn(userRepository, 'save').mockResolvedValueOnce(user);
 
       const result = await userService.create(user);
       expect(result).toBe(user);
@@ -52,9 +49,7 @@ describe('UserService', () => {
     it('Should return an array of users', async () => {
       const users = [Mock_User];
 
-      jest
-        .spyOn(userRepository, 'find')
-        .mockReturnValueOnce(Promise.resolve(users));
+      jest.spyOn(userRepository, 'find').mockResolvedValueOnce(users);
 
       const result = await userService.findAll();
       expect(result).toBe(users);
@@ -66,9 +61,7 @@ describe('UserService', () => {
     it('Should return a user', async () => {
       const user = Mock_User;
 
-      jest
-        .spyOn(userRepository, 'findOneBy')
-        .mockReturnValueOnce(Promise.resolve(user));
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(user);
 
       const result = await userService.findOne(user.id);
       expect(result).toBe(user);
@@ -76,9 +69,7 @@ describe('UserService', () => {
     });
 
     it('Should be NotFoundException', async () => {
-      jest
-        .spyOn(userRepository, 'findOneBy')
-        .mockReturnValueOnce(Promise.resolve(null));
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(null);
 
       try {
         const result = await userService.findOne(1);
@@ -91,9 +82,7 @@ describe('UserService', () => {
 
   describe('Update', () => {
     it('Should be NotFoundException', async () => {
-      jest
-        .spyOn(userRepository, 'findOneBy')
-        .mockReturnValueOnce(Promise.resolve(null));
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(null);
 
       try {
         const result = await userService.update(1, Mock_User);
@@ -106,9 +95,7 @@ describe('UserService', () => {
     it('Should update a user', async () => {
       const user = Mock_User;
 
-      jest
-        .spyOn(userRepository, 'findOneBy')
-        .mockReturnValueOnce(Promise.resolve(user));
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(user);
 
       jest
         .spyOn(userRepository, 'update')
@@ -119,6 +106,32 @@ describe('UserService', () => {
 
       const result = await userService.update(1, updateUserDto);
       expect(result).toEqual({ message: 'User updated successfully.' });
+    });
+  });
+
+  describe('Delete', () => {
+    it('Should be NotFoundException', async () => {
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(null);
+
+      try {
+        const result = await userService.remove(1);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+
+    it('Should delete a user', async () => {
+      const user = Mock_User;
+
+      jest.spyOn(userRepository, 'findOneBy').mockResolvedValueOnce(user);
+
+      jest
+        .spyOn(userRepository, 'delete')
+        .mockResolvedValueOnce({ affected: 1, raw: [] });
+
+      const result = await userService.remove(1);
+      expect(result).toEqual({ message: 'User deleted successfully.' });
     });
   });
 });

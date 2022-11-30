@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  NotImplementedException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -38,7 +37,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.userService.remove(+id);
   }
 }

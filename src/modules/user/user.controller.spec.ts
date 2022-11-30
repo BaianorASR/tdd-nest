@@ -19,6 +19,7 @@ describe('UserController', () => {
     findAll: jest.fn(),
     findOne: jest.fn(),
     update: jest.fn(),
+    remove: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -104,6 +105,32 @@ describe('UserController', () => {
 
       try {
         const result = await userController.update(1, Mock_Create_User_Dto);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+  });
+
+  describe('Delete', () => {
+    it('Should delete a user', async () => {
+      const successReturn = { message: 'User deleted successfully.' };
+
+      jest.spyOn(userService, 'findOne').mockResolvedValueOnce(Mock_User);
+
+      jest.spyOn(userService, 'remove').mockResolvedValueOnce(successReturn);
+
+      const result = await userController.remove(1);
+      expect(result).toEqual(successReturn);
+    });
+
+    it('Should be NotFoundException', async () => {
+      jest
+        .spyOn(userService, 'findOne')
+        .mockRejectedValueOnce(new NotFoundException());
+
+      try {
+        const result = await userController.remove(1);
         expect(result).not.toBeDefined();
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
