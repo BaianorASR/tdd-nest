@@ -1,4 +1,8 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  INestApplication,
+  NotFoundException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Mock_Create_User_Dto, Mock_User } from '@test/mocks/user.mock';
 
@@ -13,6 +17,7 @@ describe('UserController', () => {
   const mockUserService = {
     create: jest.fn(),
     findAll: jest.fn(),
+    findOne: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -34,13 +39,13 @@ describe('UserController', () => {
     await app.init();
   });
 
-  it('should be defined', () => {
+  it('Should be defined', () => {
     expect(userController).toBeDefined();
     expect(userService).toBeDefined();
   });
 
   describe('Create', () => {
-    it('should create a user', async () => {
+    it('Should create a user', async () => {
       jest
         .spyOn(userService, 'create')
         .mockReturnValueOnce(Promise.resolve(Mock_User));
@@ -51,13 +56,37 @@ describe('UserController', () => {
   });
 
   describe('FindAll', () => {
-    it('should return an array of users', async () => {
+    it('Should return an array of users', async () => {
       jest
         .spyOn(userService, 'findAll')
         .mockReturnValueOnce(Promise.resolve([Mock_User]));
 
       const result = await userController.findAll();
       expect(result).toEqual([Mock_User]);
+    });
+  });
+
+  describe('FindOneById', () => {
+    it('Should return a user', async () => {
+      jest
+        .spyOn(userService, 'findOne')
+        .mockReturnValueOnce(Promise.resolve(Mock_User));
+
+      const result = await userController.findOne(1);
+      expect(result).toEqual(Mock_User);
+    });
+
+    it('Should be NotFoundException', async () => {
+      jest
+        .spyOn(userService, 'findOne')
+        .mockRejectedValueOnce(new NotFoundException());
+
+      try {
+        const result = await userController.findOne(1);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
     });
   });
 });

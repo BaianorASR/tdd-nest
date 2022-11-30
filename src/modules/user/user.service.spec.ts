@@ -1,6 +1,7 @@
 import { Repository } from 'typeorm';
 
 import { User } from '@entities/index';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Mock_User } from '@test/mocks/index';
@@ -33,7 +34,7 @@ describe('UserService', () => {
   });
 
   describe('Create', () => {
-    it('should create a user', async () => {
+    it('Should create a user', async () => {
       const user = Mock_User;
 
       jest
@@ -47,7 +48,7 @@ describe('UserService', () => {
   });
 
   describe('FindAll', () => {
-    it('should return an array of users', async () => {
+    it('Should return an array of users', async () => {
       const users = [Mock_User];
 
       jest
@@ -60,8 +61,8 @@ describe('UserService', () => {
     });
   });
 
-  describe('FindOne', () => {
-    it('should return a user', async () => {
+  describe('FindOneById', () => {
+    it('Should return a user', async () => {
       const user = Mock_User;
 
       jest
@@ -71,6 +72,19 @@ describe('UserService', () => {
       const result = await userService.findOne(user.id);
       expect(result).toBe(user);
       expect(userRepository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+    });
+
+    it('Should be NotFoundException', async () => {
+      jest
+        .spyOn(userRepository, 'findOneBy')
+        .mockReturnValueOnce(Promise.resolve(null));
+
+      try {
+        const result = await userService.findOne(1);
+        expect(result).not.toBeDefined();
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
     });
   });
 });
