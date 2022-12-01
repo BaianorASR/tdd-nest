@@ -8,6 +8,6 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(8, 30)
+  @Length(6, 30)
   password: string;
 }
