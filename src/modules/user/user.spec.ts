@@ -1,10 +1,11 @@
 import request from 'supertest';
+import { Repository } from 'typeorm';
 
 import { User } from '@entities/user.entity';
 import { INestApplication } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserModule } from './user.module';
@@ -12,6 +13,25 @@ import { UserService } from './user.service';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let userRepository: Repository<User>;
+
+  const MOCK_USERS = [
+    {
+      id: 1,
+      username: 'test1',
+      password: 'test123456',
+    },
+    {
+      id: 2,
+      username: 'test2',
+      password: 'test123456',
+    },
+    {
+      id: 3,
+      username: 'test3',
+      password: 'test123456',
+    },
+  ];
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +51,11 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+
+    userRepository = app.get(getRepositoryToken(User));
+    const usersArray = userRepository.create(MOCK_USERS);
+    await userRepository.save(usersArray);
+
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
@@ -43,7 +68,10 @@ describe('AppController (e2e)', () => {
     it('Should be return array users', async () => {
       const response = await request(app.getHttpServer()).get('/user');
       expect(response.statusCode).toBe(200);
-      expect(response.body).toEqual([]);
+      expect(response.body).toHaveLength(3);
+      response.body.forEach((user: User, index: number) => {
+        expect(user.username).toEqual(MOCK_USERS[index].username);
+      });
     });
   });
 
@@ -60,18 +88,14 @@ describe('AppController (e2e)', () => {
 
       expect(response.statusCode).toBe(201);
       expect(response.body).toEqual({
-        id: 1,
+        id: MOCK_USERS.length + 1,
         username: createUserDto.username,
       });
-
-      const responseGet = await request(app.getHttpServer()).get('/user');
-      expect(responseGet.statusCode).toBe(200);
-      expect(responseGet.body).toEqual([response.body]);
     });
 
     it('Should be return error when create a user with same username', async () => {
       const createUserDto: CreateUserDto = {
-        username: 'test',
+        username: 'test1',
         password: 'test123',
       };
 
@@ -79,17 +103,7 @@ describe('AppController (e2e)', () => {
         .post('/user')
         .send(createUserDto);
 
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toEqual({
-        id: 1,
-        username: createUserDto.username,
-      });
-
-      const response2 = await request(app.getHttpServer())
-        .post('/user')
-        .send(createUserDto);
-
-      expect(response2.statusCode).toBe(500);
+      expect(response.statusCode).toBe(500);
     });
 
     it('Should be return error when create a user with empty username', async () => {
