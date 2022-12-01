@@ -3,8 +3,6 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AllExceptionsFilter } from './exception-filters/Http-Exception.filter';
 import { UserModule } from './modules/user/user.module';
 
@@ -12,16 +10,15 @@ import { UserModule } from './modules/user/user.module';
   imports: [
     UserModule,
     TypeOrmModule.forRoot({
-      type: 'sqlite',
+      type: 'better-sqlite3',
       database: 'database.sqlite',
       entities: [User],
       synchronize: true,
       autoLoadEntities: true,
+      logging: false,
     }),
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

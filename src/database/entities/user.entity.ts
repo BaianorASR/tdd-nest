@@ -6,7 +6,7 @@ export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column('varchar', { length: 120 })
+  @Column('varchar', { length: 120, unique: true })
   username: string;
 
   @Column('varchar', { length: 30, select: false })
